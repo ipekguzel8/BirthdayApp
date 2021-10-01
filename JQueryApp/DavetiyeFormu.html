@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.js"></script>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+   <div class="container">
+       <div class="row">
+           <img id="ajax-loader" src="loader.gif" style="display:none; width=100px;" />
+           <div class="col-md-12">
+               <div id="results" class="alert alert-success" style="display:none;"><h3>Bilgileriniz Kaydedildi</h3>
+               <h4>
+                   <span id="Gelenler"></span>
+               </h4>
+               </div>
+               <div class="panel panel-primary">
+                   <div class="panel-heading">
+                       <h4>Sende Davetlisin !</h4>
+                   </div>
+                   <div class="panel-body">
+                       <form id="DavetiyeForm">
+                           <div class="form-group">
+                               <label>Ad :</label>
+                               <input type="text" name="Ad" id="Ad" class="form-control" />
+                           </div>
+                           <div class="form-group">
+                               <label>Eposta :</label>
+                               <input type="text" name="Eposta" id="Eposta" class="form-control" />
+                           </div>
+                           <div class="form-group">
+                               <label>Katılacak mısın? :</label>
+                               <select name="KatilmaDurumu" id="KatilmaDurumu" class="form-control">
+                                   <option>Partiye Katılıyormusun?</option>
+                                   <option value="true">Evet, Geliyorum.</option>
+                                   <option value="false">Hayır, Gelmiyorum.</option>
+                               </select>
+                           </div>
+                           <div class="text-center">
+                               <input class="btn btn-success" type="submit" value="Gönder" />
+                           </div>
+                       </form>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+    <script>
+        function GetKatilanlar() {
+            var html = [];
+            $.getJSON("https://localhost:44358/api/Davetiye/Katilanlar", function (data) {
+                $.each(data, function (key, value) {
+                    html.push("<label class='label label-success'>" + value.Ad + "</label> ")
+
+                });
+                $("Gelenler").empty().append(html);
+            });
+        }
+        $("#DavetiyeForm").submit(function (event) {
+            event.preventDefault();
+            $.ajax({
+                url: "https://localhost:44358/api/Davetiye/Ekle",
+                data: {
+                    Ad: $("#Ad").val(),
+                    Eposta: $("#Eposta").val(),
+                    KatilmaDurumu: $("#KatilmaDurumu").val()
+                },
+                type: "Post",
+                beforeSend: function () {
+                    $("#ajax-loader").show();
+                },
+                complete: function () {
+                    $("#ajax-loader").hide();
+                },
+                success: function () {
+                    $("#results").show();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
